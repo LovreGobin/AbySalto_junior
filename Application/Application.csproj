@@ -7,4 +7,15 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="DTOs\" />
+    <Folder Include="Interfaces\" />
+    <Folder Include="Services\" />
+    <Folder Include="Repositories\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+  </ItemGroup>
+
 </Project>
