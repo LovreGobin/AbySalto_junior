@@ -1,3 +1,4 @@
+using AbySalto.Junior.Middleware;
 using Application;
 using Infrastructure;
 using Microsoft.OpenApi.Models;
@@ -10,22 +11,36 @@ namespace AbySalto.Junior
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddControllers();
-            builder.Services.AddOpenApi();
+            builder.Services.AddControllers()
+               .AddJsonOptions(options =>
+               {
+                   // Sluzi kako bismo mogli u swaggeru slati ne indexe enum-a nego string
+                   options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+               });
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Restaurant", Version = "v1" });
             });
-
             builder.Services.AddApplication();
             builder.Services.AddInfrastructure(builder.Configuration);
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader();
+                });
+            });
 
             var app = builder.Build();
 
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
+
             if (app.Environment.IsDevelopment())
             {
-                app.MapOpenApi();
                 app.UseSwagger();
                 app.UseSwaggerUI(options =>
                 {
@@ -34,6 +49,7 @@ namespace AbySalto.Junior
                 });
             }
 
+            app.UseCors();
             app.UseHttpsRedirection();
             app.UseAuthorization();
             app.MapControllers();

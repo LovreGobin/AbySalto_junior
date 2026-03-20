@@ -1,4 +1,5 @@
-﻿using Application.DTOs;
+﻿using Application.Common;
+using Application.DTOs;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using Domain.Enums;
@@ -15,23 +16,27 @@ namespace Application.Services
             _orderRepository = orderRepository;
         }
 
-        public async Task<List<OrderDto>> GetAllOrdersAsync(bool sortByAmount)
+        public async Task<Result<List<OrderDto>>> GetAllOrdersAsync(bool sortByAmount)
         {
             var orders = await _orderRepository.GetAllAsync();
 
             if (sortByAmount)
                 orders = orders.OrderBy(o => o.Items.Sum(i => i.Price * i.Quantity)).ToList();
 
-            return orders.Select(MapToDto).ToList();
+            return Result<List<OrderDto>>.Success(orders.Select(MapToDto).ToList());
         }
 
-        public async Task<OrderDto?> GetOrderByIdAsync(int id)
+        public async Task<Result<OrderDto>> GetOrderByIdAsync(int id)
         {
             var order = await _orderRepository.GetByIdAsync(id);
-            return order == null ? null : MapToDto(order);
+
+            if (order == null)
+                return Result<OrderDto>.Failure(new List<string> { $"Order with id {id} was not found." });
+
+            return Result<OrderDto>.Success(MapToDto(order));
         }
 
-        public async Task CreateOrderAsync(CreateOrderDto dto)
+        public async Task<Result<object>> CreateOrderAsync(CreateOrderDto dto)
         {
             var order = new Order
             {
@@ -52,23 +57,29 @@ namespace Application.Services
             };
 
             await _orderRepository.AddAsync(order);
+            return Result<object>.Success("Order created successfully.");
         }
 
-        public async Task UpdateOrderStatusAsync(int id, OrderStatus status)
+        public async Task<Result<object>> UpdateOrderStatusAsync(int id, OrderStatus status)
         {
             var order = await _orderRepository.GetByIdAsync(id);
-            if (order == null) return;
+
+            if (order == null)
+                return Result<object>.Failure(new List<string> { $"Order with id {id} was not found." });
 
             order.Status = status;
             await _orderRepository.UpdateAsync(order);
+            return Result<object>.Success("Order status updated.");
         }
 
-        public async Task<decimal> CalculateTotalAsync(int id)
+        public async Task<Result<decimal>> CalculateTotalAsync(int id)
         {
             var order = await _orderRepository.GetByIdAsync(id);
-            if (order == null) return 0;
 
-            return order.Items.Sum(i => i.Price * i.Quantity);
+            if (order == null)
+                return Result<decimal>.Failure(new List<string> { $"Order with id {id} was not found." });
+
+            return Result<decimal>.Success(order.Items.Sum(i => i.Price * i.Quantity));
         }
 
         private static OrderDto MapToDto(Order order) => new()
