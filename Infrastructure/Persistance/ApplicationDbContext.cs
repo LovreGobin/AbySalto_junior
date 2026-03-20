@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Domain.Models;
+using Application.Interfaces;
 
 namespace AbySalto.Junior.Infrastructure.Database
 {
@@ -8,7 +10,8 @@ namespace AbySalto.Junior.Infrastructure.Database
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
 
-
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -17,7 +20,7 @@ namespace AbySalto.Junior.Infrastructure.Database
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
         }
 
-        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             return await base.SaveChangesAsync(cancellationToken);
         }
