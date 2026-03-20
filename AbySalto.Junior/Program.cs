@@ -2,6 +2,7 @@ using AbySalto.Junior.Middleware;
 using Application;
 using Infrastructure;
 using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 namespace AbySalto.Junior
 {
@@ -22,7 +23,11 @@ namespace AbySalto.Junior
             builder.Services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Restaurant", Version = "v1" });
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
             });
+
             builder.Services.AddApplication();
             builder.Services.AddInfrastructure(builder.Configuration);
             builder.Services.AddCors(options =>

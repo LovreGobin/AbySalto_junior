@@ -17,6 +17,10 @@ namespace AbySalto.Junior.Controllers
             _orderService = orderService;
         }
 
+        /// <summary>
+        /// Gets all orders, optionally sorted by total amount.
+        /// </summary>
+        /// <param name="sortByAmount">If true, orders are sorted by total amount ascending.</param>
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] bool sortByAmount = false)
         {
@@ -24,6 +28,10 @@ namespace AbySalto.Junior.Controllers
             return this.HandleResult(result);
         }
 
+        /// <summary>
+        /// Gets a specific order by ID.
+        /// </summary>
+        /// <param name="id">The order ID.</param>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -31,6 +39,9 @@ namespace AbySalto.Junior.Controllers
             return this.HandleResult(result);
         }
 
+        /// <summary>
+        /// Creates a new order.
+        /// </summary>
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateOrderDto dto)
         {
@@ -38,6 +49,11 @@ namespace AbySalto.Junior.Controllers
             return this.HandleResult(result);
         }
 
+        /// <summary>
+        /// Updates the status of an existing order.
+        /// </summary>
+        /// <param name="id">The order ID.</param>
+        /// <param name="status">The new status.</param>
         [HttpPut("{id}/status")]
         public async Task<IActionResult> UpdateStatus(int id, [FromQuery] OrderStatus status)
         {
@@ -45,6 +61,10 @@ namespace AbySalto.Junior.Controllers
             return this.HandleResult(result);
         }
 
+        /// <summary>
+        /// Calculates the total amount of an order.
+        /// </summary>
+        /// <param name="id">The order ID.</param>
         [HttpGet("{id}/total")]
         public async Task<IActionResult> GetTotal(int id)
         {

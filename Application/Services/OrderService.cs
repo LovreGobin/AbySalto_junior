@@ -4,6 +4,7 @@ using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using Domain.Enums;
 using Domain.Models;
+using Domain.Constants;
 
 namespace Application.Services
 {
@@ -21,7 +22,12 @@ namespace Application.Services
             var orders = await _orderRepository.GetAllAsync();
 
             if (sortByAmount)
-                orders = orders.OrderBy(o => o.Items.Sum(i => i.Price * i.Quantity)).ToList();
+                orders = orders.OrderBy(o =>
+                {
+                    var total = o.Items.Sum(i => i.Price * i.Quantity);
+                    var rate = OrderConstants.ConversionRates.TryGetValue(o.Currency, out var r) ? r : 1.0m;
+                    return total * rate;
+                }).ToList();
 
             return Result<List<OrderDto>>.Success(orders.Select(MapToDto).ToList());
         }
@@ -45,7 +51,7 @@ namespace Application.Services
                 DeliveryAddress = dto.DeliveryAddress,
                 ContactNumber = dto.ContactNumber,
                 Note = dto.Note,
-                Currency = dto.Currency,
+                Currency = string.IsNullOrWhiteSpace(dto.Currency) ? OrderConstants.DefaultCurrency : dto.Currency,
                 Status = OrderStatus.Pending,
                 OrderTime = DateTime.UtcNow,
                 Items = dto.Items.Select(i => new OrderItem
