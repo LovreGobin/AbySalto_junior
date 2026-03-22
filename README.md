@@ -25,6 +25,9 @@ The solution follows Clean Architecture principles, split into 4 projects:
 - [SQL Server Express](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) (free)
 - [Visual Studio 2022](https://visualstudio.microsoft.com/) or any IDE with .NET support
 
+ ## Related Repositories
+- [Frontend Repo](https://github.com/LovreGobin/abysalto-frontend)
+
 ## Getting Started
 
 ### 1. Clone the repository
