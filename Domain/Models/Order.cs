@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Domain.Constants;
 using Domain.Enums;
 
 namespace Domain.Models
@@ -17,7 +13,7 @@ namespace Domain.Models
         public string DeliveryAddress { get; set; } = string.Empty;
         public string ContactNumber { get; set; } = string.Empty;
         public string? Note { get; set; }
-        public string Currency { get; set; } = "EUR";
+        public string Currency { get; set; } = OrderConstants.DefaultCurrency;
         public List<OrderItem> Items { get; set; } = new();
     }
 }
